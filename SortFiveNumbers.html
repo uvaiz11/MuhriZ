@@ -1,31 +1,213 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <style>
+        .field-error {
+            position: absolute;
+            left: 0;
+            top: 40px;
+            background: #d32f2f;
+            color: #fff;
+            font-size: 13px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(211,47,47,0.15);
+            white-space: nowrap;
+        }
+        body {
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .container {
+            background: rgba(255,255,255,0.85);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(33,147,176,0.15);
+            padding: 32px 24px;
+            margin-top: 48px;
+            width: 340px;
+            max-width: 90vw;
+        }
+        h2 {
+            color: #2193b0;
+            margin-bottom: 18px;
+        }
+    </style>
+    <style>
+        .modern-input {
+            padding: 8px 12px;
+            border: 1px solid #b0c4de;
+            border-radius: 6px;
+            font-size: 16px;
+            margin: 4px 2px;
+            box-shadow: 0 1px 4px rgba(33,147,176,0.08);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .modern-input:focus {
+            border-color: #2193b0;
+            box-shadow: 0 2px 8px rgba(33,147,176,0.15);
+        }
+    </style>
     <title>Sort Five Numbers</title>
+    <style>
+        .gradient-btn {
+            background: linear-gradient(90deg, #2193b0 0%, #6dd5ed 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+        .gradient-btn:hover {
+            box-shadow: 0 2px 8px rgba(33,147,176,0.3);
+        }
+    </style>
 </head>
 <body>
-    <h2>Enter 5 strings:</h2>
-    <input type="text" id="str1">
-    <input type="text" id="str2">
-    <input type="text" id="str3">
-    <input type="text" id="str4">
-    <input type="text" id="str5">
-    <button onclick="sortStrings()">Sort</button>
-    <p id="asc"></p>
+    <div id="errorMsg" style="color: #d32f2f; font-size: 15px; margin-bottom: 10px; display: none;"></div>
+    <div id="numErrorMsg" style="color: #d32f2f; font-size: 15px; margin-bottom: 10px; display: none;"></div>
+    <div class="container">
+        <h2>Enter 5 strings:</h2>
+    <div id="errorMsg" style="color: #d32f2f; font-size: 15px; margin-bottom: 10px; display: none;"></div>
+        <div style="position:relative;">
+            <input type="text" id="str1" class="modern-input" placeholder="First string">
+            <span id="err-str1" class="field-error" style="display:none;"></span>
+        </div>
+        <div style="position:relative;">
+            <input type="text" id="str2" class="modern-input" placeholder="Second string">
+            <span id="err-str2" class="field-error" style="display:none;"></span>
+        </div>
+        <div style="position:relative;">
+            <input type="text" id="str3" class="modern-input" placeholder="Third string">
+            <span id="err-str3" class="field-error" style="display:none;"></span>
+        </div>
+        <div style="position:relative;">
+            <input type="text" id="str4" class="modern-input" placeholder="Fourth string">
+            <span id="err-str4" class="field-error" style="display:none;"></span>
+        </div>
+        <div style="position:relative;">
+            <input type="text" id="str5" class="modern-input" placeholder="Fifth string">
+            <span id="err-str5" class="field-error" style="display:none;"></span>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
+            <button class="gradient-btn" onclick="sortStrings()" title="Sorting of given string values">Sort</button>
+            <button id="clearBtn" class="gradient-btn" onclick="clearFields()" style="background: linear-gradient(90deg, #6dd5ed 0%, #2193b0 100%); display:none;" title="Clear all fields and results">Clear</button>
+        </div>
+        <div style="display: flex; gap: 24px; justify-content: center; margin-top: 16px;">
+            <table id="ascTable" style="border-collapse:collapse; width:200px;">
+                <thead>
+                    <tr><th style="background: #2193b0; color: white; padding: 8px;">Ascending Order</th></tr>
+                </thead>
+                <tbody id="asc"></tbody>
+            </table>
+            <table id="descTable" style="border-collapse:collapse; width:200px;">
+                <thead>
+                    <tr><th style="background: #6dd5ed; color: #222; padding: 8px;">Descending Order</th></tr>
+                </thead>
+                <tbody id="desc"></tbody>
+            </table>
+        </div>
+    </div>
 
     <script>
+        // Show error if number is entered in any field
+        function checkForNumbers() {
+            let inputIds = ['str1', 'str2', 'str3', 'str4', 'str5'];
+            let numErrorMsg = document.getElementById('numErrorMsg');
+            let hasNumber = false;
+            inputIds.forEach(id => {
+                let value = document.getElementById(id).value;
+                if (/\d/.test(value)) {
+                    hasNumber = true;
+                }
+            });
+            if (hasNumber) {
+                numErrorMsg.textContent = "Number should not add in this field";
+                numErrorMsg.style.display = "block";
+            } else {
+                numErrorMsg.style.display = "none";
+            }
+        }
+
+        // Attach input event listeners for number check
+        window.addEventListener('DOMContentLoaded', function() {
+            let inputIds = ['str1', 'str2', 'str3', 'str4', 'str5'];
+            inputIds.forEach(id => {
+                document.getElementById(id).addEventListener('input', function() {
+                    toggleClearBtn();
+                    checkForNumbers();
+                });
+            });
+        });
+        // Show/hide clear button based on input values
+        function toggleClearBtn() {
+            let inputIds = ['str1', 'str2', 'str3', 'str4', 'str5'];
+            let show = inputIds.some(id => document.getElementById(id).value.trim() !== "");
+            document.getElementById('clearBtn').style.display = show ? "inline-block" : "none";
+        }
+
+        // Attach input event listeners
+        window.addEventListener('DOMContentLoaded', function() {
+            let inputIds = ['str1', 'str2', 'str3', 'str4', 'str5'];
+            inputIds.forEach(id => {
+                document.getElementById(id).addEventListener('input', toggleClearBtn);
+            });
+        });
+        function clearFields() {
+            let inputIds = ['str1', 'str2', 'str3', 'str4', 'str5'];
+            inputIds.forEach(id => document.getElementById(id).value = "");
+            document.getElementById('asc').innerHTML = "";
+            document.getElementById('desc').innerHTML = "";
+            document.getElementById('errorMsg').style.display = "none";
+            document.getElementById('numErrorMsg').style.display = "none";
+            toggleClearBtn();
+        }
         function sortStrings() {
-            let strings = [
-                document.getElementById('str1').value,
-                document.getElementById('str2').value,
-                document.getElementById('str3').value,
-                document.getElementById('str4').value,
-                document.getElementById('str5').value
-            ];
-            // Remove empty strings
-            strings = strings.filter(s => s.trim() !== "");
+            let errorMsg = document.getElementById('errorMsg');
+            let inputIds = ['str1', 'str2', 'str3', 'str4', 'str5'];
+            let strings = inputIds.map(id => document.getElementById(id).value.trim());
+            // Validation: all fields must be filled
+            if (strings.some(s => s === "")) {
+                errorMsg.textContent = "All fields should need to be filled";
+                errorMsg.style.display = "block";
+                return;
+            } else {
+                errorMsg.textContent = "";
+                errorMsg.style.display = "none";
+            }
             let asc = [...strings].sort();
-            document.getElementById('asc').innerText = "Ascending: " + asc.join(", ");
+            let desc = [...strings].sort().reverse();
+            let ascTableBody = document.getElementById('asc');
+            let descTableBody = document.getElementById('desc');
+            ascTableBody.innerHTML = "";
+            descTableBody.innerHTML = "";
+            asc.forEach(str => {
+                let row = document.createElement('tr');
+                let cell = document.createElement('td');
+                cell.textContent = str;
+                cell.style.padding = "8px";
+                row.appendChild(cell);
+                ascTableBody.appendChild(row);
+            });
+            desc.forEach(str => {
+                let row = document.createElement('tr');
+                let cell = document.createElement('td');
+                cell.textContent = str;
+                cell.style.padding = "8px";
+                row.appendChild(cell);
+                descTableBody.appendChild(row);
+            });
+            // Clear input fields
+            inputIds.forEach(id => document.getElementById(id).value = "");
         }
     </script>
 </body>
