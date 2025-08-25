@@ -4,29 +4,28 @@
     <title>Sort Five Numbers</title>
 </head>
 <body>
-    <h2>Enter 5 numbers:</h2>
-    <input type="number" id="num1">
-    <input type="number" id="num2">
-    <input type="number" id="num3">
-    <input type="number" id="num4">
-    <input type="number" id="num5">
-    <button onclick="sortNumbers()">Sort</button>
+    <h2>Enter 5 strings:</h2>
+    <input type="text" id="str1">
+    <input type="text" id="str2">
+    <input type="text" id="str3">
+    <input type="text" id="str4">
+    <input type="text" id="str5">
+    <button onclick="sortStrings()">Sort</button>
     <p id="asc"></p>
-    <p id="desc"></p>
 
     <script>
-        function sortNumbers() {
-            let numbers = [
-                parseInt(document.getElementById('num1').value),
-                parseInt(document.getElementById('num2').value),
-                parseInt(document.getElementById('num3').value),
-                parseInt(document.getElementById('num4').value),
-                parseInt(document.getElementById('num5').value)
+        function sortStrings() {
+            let strings = [
+                document.getElementById('str1').value,
+                document.getElementById('str2').value,
+                document.getElementById('str3').value,
+                document.getElementById('str4').value,
+                document.getElementById('str5').value
             ];
-            let asc = [...numbers].sort((a, b) => a - b);
-            let desc = [...numbers].sort((a, b) => b - a);
+            // Remove empty strings
+            strings = strings.filter(s => s.trim() !== "");
+            let asc = [...strings].sort();
             document.getElementById('asc').innerText = "Ascending: " + asc.join(", ");
-            document.getElementById('desc').innerText = "Descending: " + desc.join(", ");
         }
     </script>
 </body>
